@@ -20,6 +20,8 @@ class Bot:
         # keyboard stuff
         self.start_keyboard = telebot.types.ReplyKeyboardMarkup()
         self.plan_keyboard = telebot.types.ReplyKeyboardMarkup()
+        self.start_keyboard = telebot.types.ReplyKeyboardMarkup()
+        self.start_keyboard.row("/start")
         for i in msg.choose_main:
             self.start_keyboard.row(i)
         for i in msg.choose_plan:
@@ -109,9 +111,9 @@ class Bot:
                                   reply_markup=self.plan_keyboard)
 
     def write_user(self, message):
-        print(f'{message.from_user.first_name} {message.from_user.last_name} that have userid {self.user_id} choosed {self.choice} at level {message.text}')
+        print(f'{message.from_user.first_name} {message.from_user.last_name} who have userid {self.user_id} choosed {self.choice} at level {message.text}')
         self.bot.send_message(message.chat.id, "Thank you for your choice.\n"
-                                               "Click /start or simply write it to add subscrtiptions")
+                                               "Click /start or simply write it, to add subscrtiptions", reply_markup=self.start_keyboard)
 
 
 if __name__ == '__main__':
