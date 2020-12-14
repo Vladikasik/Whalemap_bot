@@ -3,7 +3,7 @@ import time
 from telebot import types
 import msg
 import config
-
+from database_config import DB
 
 class Bot:
 
@@ -13,6 +13,9 @@ class Bot:
         self.type_plan = None
         self.user_id = None
         self.choice = None
+
+        # classes
+        self.db = DB()
 
         # telebot
         self.bot = telebot.TeleBot(config.token)
@@ -112,8 +115,12 @@ class Bot:
 
     def write_user(self, message):
         print(f'{message.from_user.first_name} {message.from_user.last_name} who have userid {self.user_id} choosed {self.choice} at level {message.text}')
+        self.bd.write_data([self.user_id, self.choice, self.message.text], groups=True)
+        str_plan = str(self.choice) + ' ' + str(message.text)
+        self.db.write_data([self.user_id, str_plan], user=True)
         self.bot.send_message(message.chat.id, "Thank you for your choice.\n"
                                                "Click /start or simply write it, to add subscrtiptions", reply_markup=self.start_keyboard)
+
 
 
 if __name__ == '__main__':

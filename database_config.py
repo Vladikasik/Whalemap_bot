@@ -8,18 +8,26 @@ class DB:
         self.groups_file = "groups.json"
         self.users_file = "users.json"
 
-    def write_user(self, data, group=False, user=False):
+    def write_data(self, data, group=False, user=False):
         if group:
             with open(self.groups_file, "r") as file:
                 groups_data = json.load(file)
             groups_data[data[1]][data[2]].append(data[0])
-            with open(self.groups_file, 'w') as file:
-                json.dump(groups_data, file, indent=4)
-            print('groups updated')
+            if data[0] not in groups_data[data[1]][data[2]]:
+                groups_data[data[1]][data[2]].append(data[0])
+                with open(self.groups_file, 'w') as file:
+                    json.dump(groups_data, file, indent=4)
+                print('groups updated')
+            else:
+                print('user already subsribed to this plan')
         elif user:
             with open(self.users_file, "r") as file:
                 users_data = json.load(file)
-            users_data[data[0]] = data[1]
+            try:
+                if data[1] not in users_data[data[0]]:
+                    users_data[data[0]].append(data[1])
+            except KeyError:
+                users_data[data[0]] = [data[1]]
 
     def get_user(self, user_id):
         with open(self.users_file, "r") as file:
