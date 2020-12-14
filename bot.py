@@ -5,6 +5,7 @@ import msg
 import config
 from database_config import DB
 
+
 class Bot:
 
     def __init__(self):
@@ -51,7 +52,7 @@ class Bot:
 
             elif message.text.lower() == '⛰large transactions':
                 self.plan_choose(message, type_plan='txes')
-
+            # follow instructions in bot, or you'll go away
             else:
                 self.bot.send_message(message.chat.id, "Слышь бля, ты мне тут хуету не пиши",
                                       reply_markup=self.start_keyboard)
@@ -109,10 +110,13 @@ class Bot:
             self.choice = 'txes'
             self.bot.register_next_step_handler(answer, self.write_user)
 
+        # follow instructions in bot, or you'll go away
         else:
             self.bot.send_message(message.chat.id, "Слышь бля, ты мне тут хуету не пиши",
                                   reply_markup=self.plan_keyboard)
 
+    # writing user to all types of db
+    # also returning to main menu by /start
     def write_user(self, message):
         print(f'{message.from_user.first_name} {message.from_user.last_name} who have userid {self.user_id} choosed {self.choice} at level {message.text}')
         self.db.write_data([self.user_id, self.choice, message.text], group=True)
@@ -121,6 +125,7 @@ class Bot:
         self.bot.send_message(message.chat.id, "Thank you for your choice.\n"
                                                "Click /start or simply write it, to add subscrtiptions", reply_markup=self.return_keyboard)
 
+    # simple and easy mailing
     def mailing(self, group, plan, message):
         users_list = self.db.get_group(group=group, plan=plan)
         for i in users_list:
