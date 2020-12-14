@@ -23,8 +23,8 @@ class Bot:
         # keyboard stuff
         self.start_keyboard = telebot.types.ReplyKeyboardMarkup()
         self.plan_keyboard = telebot.types.ReplyKeyboardMarkup()
-        self.start_keyboard = telebot.types.ReplyKeyboardMarkup()
-        self.start_keyboard.row("/start")
+        self.return_keyboard = telebot.types.ReplyKeyboardMarkup()
+        self.return_keyboard.row("/start")
         for i in msg.choose_main:
             self.start_keyboard.row(i)
         for i in msg.choose_plan:
@@ -119,7 +119,7 @@ class Bot:
         str_plan = str(self.choice) + ' ' + str(message.text)
         self.db.write_data([self.user_id, str_plan], user=True)
         self.bot.send_message(message.chat.id, "Thank you for your choice.\n"
-                                               "Click /start or simply write it, to add subscrtiptions", reply_markup=self.start_keyboard)
+                                               "Click /start or simply write it, to add subscrtiptions", reply_markup=self.return_keyboard)
 
 
 
