@@ -1,17 +1,26 @@
-{"Whale inflows":
-        {"Pro":  [],
-        "Recomended":  []
-        },
-"Sopr":
-        {"Pro":  [],
-        "Recomended":  []
-        },
-"Hodler volumes":
-      {"Pro":  [],
-      "Recomended":  []
-      },
-"Large transactions":
-    {"Pro":  [],
-    "Recomended":  []
+{
+    "whale": {
+        "Pro": [],
+        "Recomended": [
+            489989504
+        ]
+    },
+    "sopr": {
+        "Pro": [
+            489989504
+        ],
+        "Recomended": [
+            489989504
+        ]
+    },
+    "volumes": {
+        "Pro": [
+            489989504
+        ],
+        "Recomended": []
+    },
+    "txes": {
+        "Pro": [],
+        "Recomended": []
     }
-      }
+}
