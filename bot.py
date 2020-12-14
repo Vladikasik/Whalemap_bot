@@ -121,6 +121,11 @@ class Bot:
         self.bot.send_message(message.chat.id, "Thank you for your choice.\n"
                                                "Click /start or simply write it, to add subscrtiptions", reply_markup=self.return_keyboard)
 
+    def mailing(self, group, plan, message):
+        users_list = self.db.get_group(group=group, plan=plan)
+        for i in users_list:
+            print(f"Sending to {i} message = '{message}'")
+            self.bot.send_message(i, message)
 
 
 if __name__ == '__main__':
