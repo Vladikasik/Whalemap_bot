@@ -1,10 +1,15 @@
 greeting = 'What notification do you want to receive?'
 
 # main buttons
-choose_main = ['🐋Whale inflows',
+choose_main_text = ['🐋Whale inflows',
                '🦜Sopr',
                '👴Hodler volumes',
                '⛰Large transactions']
+# main callback data
+choose_main_callback = ['whale',
+                        'sopr',
+                        'volumes',
+                        'txes']
 
 # plan keyboard
 choose_plan = ['Recomended',
