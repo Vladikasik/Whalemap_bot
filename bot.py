@@ -11,9 +11,9 @@ class Bot:
     def __init__(self):
 
         # vars
+        self.plan = None
         self.type_plan = None
         self.user_id = None
-        self.choice = None
 
         # classes
         self.db = DB()
@@ -22,108 +22,55 @@ class Bot:
         self.bot = telebot.TeleBot(config.token)
 
         # keyboard stuff
-        self.start_keyboard = telebot.types.ReplyKeyboardMarkup()
-        self.plan_keyboard = telebot.types.ReplyKeyboardMarkup()
-        self.return_keyboard = telebot.types.ReplyKeyboardMarkup()
-        self.return_keyboard.row("/start")
-        for i in msg.choose_main:
-            self.start_keyboard.row(i)
-        for i in msg.choose_plan:
-            self.plan_keyboard.row(i)
+        self.plan_keyboard = types.InlineKeyboardMarkup(row_width=1)
+        self.extended_keyboard = types.InlineKeyboardMarkup(row_width=2)
+        for i in range(4):
+            self.plan_keyboard.add(types.InlineKeyboardButton(text=msg.choose_main_text[i], callback_data=msg.choose_main_callback[i]))
+        for i in range(len(msg.choose_plan)):
+            self.extended_keyboard.add(types.InlineKeyboardButton(text=msg.choose_plan[i], callback_data=msg.choose_plan[i]))
+        self.extended_keyboard.row(types.InlineKeyboardButton(text='⬅Back', callback_data='start'))
+
+        # messages stuff
+        self.choose_the_fst = None
+        self.extended_choose = None
+
+        print('init done')
 
     def mainloop(self):
 
         # starting chat
         @self.bot.message_handler(commands=['start'])
         def start_message(message):
-            self.bot.send_message(message.chat.id, msg.greeting, reply_markup=self.start_keyboard)
+            self.user_id = message.from_user.id
+            self.choose_the_fst = self.bot.send_message(message.chat.id, msg.greeting, reply_markup=self.plan_keyboard)
 
-        # menu choice
-        @self.bot.message_handler(content_types=['text'])
-        def send_text(message):
-            if message.text.lower() == '🐋whale inflows':
-                self.plan_choose(message, type_plan='whale')
+        @self.bot.callback_query_handler(func=lambda call: True)
+        def buttons(call):
+            if call.data in msg.choose_main_callback:
+                self.plan = call.data
+                self.bot.edit_message_text(chat_id=call.message.chat.id, message_id=self.choose_the_fst.message_id,
+                                           text=f"Choose plan for {msg.choose_main_text[msg.choose_main_callback.index(call.data)]}",
+                                           reply_markup=self.extended_keyboard)
 
-            elif message.text.lower() == '🦜sopr':
-                self.plan_choose(message, type_plan='sopr')
+            elif call.data in msg.choose_plan:
+                self.type_plan = call.data
+                self.extended_choose = self.bot.answer_callback_query(callback_query_id=call.id, show_alert=True,
+                                               text=f"You have been sucsesfully subscribed to {self.plan} at level {self.type_plan}.")
+                self.write_user()
 
-            elif message.text.lower() == '👴hodler volumes':
-                self.plan_choose(message, type_plan='volumes')
-
-            elif message.text.lower() == '⛰large transactions':
-                self.plan_choose(message, type_plan='txes')
-            # follow instructions in bot, or you'll go away
-            else:
-                self.bot.send_message(message.chat.id, "Слышь бля, ты мне тут хуету не пиши",
-                                      reply_markup=self.start_keyboard)
+            elif call.data == 'start':
+                self.bot.edit_message_text(chat_id=call.message.chat.id, message_id=self.choose_the_fst.message_id,
+                                           text=msg.greeting,
+                                           reply_markup=self.plan_keyboard)
 
         self.bot.polling()
 
-    # choosing pro or recomended notifications
-    def plan_choose(self, message, type_plan):
-
-        # making vars clear
-        self.user_id = None
-        self.choice = None
-
-        # whale handler
-        if type_plan == "whale":
-            self.bot.send_message(message.chat.id, "Choose your plan",
-                                  reply_markup=self.plan_keyboard)  # first message and keyboard
-            # printing all the plans
-            for i in msg.whale:
-                answer = self.bot.send_message(message.chat.id, i, parse_mode='Markdown')
-            self.user_id = message.from_user.id
-            self.choice = 'whale'
-            self.bot.register_next_step_handler(answer, self.write_user)
-
-        # sopr handler
-        elif type_plan == "sopr":
-            self.bot.send_message(message.chat.id, "Choose your plan",
-                                  reply_markup=self.plan_keyboard)  # first message and keyboard
-            # printing all the plans
-            for i in msg.sopr:
-                answer = self.bot.send_message(message.chat.id, i, parse_mode='Markdown')
-            self.user_id = message.from_user.id
-            self.choice = 'sopr'
-            self.bot.register_next_step_handler(answer, self.write_user)
-
-        # volumes handler
-        elif type_plan == "volumes":
-            self.bot.send_message(message.chat.id, "Choose your plan",
-                                  reply_markup=self.plan_keyboard)  # first message and keyboard
-            # printing all the plans
-            for i in msg.volumes:
-                answer = self.bot.send_message(message.chat.id, i, parse_mode='Markdown')
-            self.user_id = message.from_user.id
-            self.choice = 'volumes'
-            self.bot.register_next_step_handler(answer, self.write_user)
-
-        # large txes handler
-        elif type_plan == "txes":
-            self.bot.send_message(message.chat.id, "Choose your plan",
-                                  reply_markup=self.plan_keyboard)  # first message and keyboard
-            # printing all the plans
-            for i in msg.txes:
-                answer = self.bot.send_message(message.chat.id, i, parse_mode='Markdown')
-            self.user_id = message.from_user.id
-            self.choice = 'txes'
-            self.bot.register_next_step_handler(answer, self.write_user)
-
-        # follow instructions in bot, or you'll go away
-        else:
-            self.bot.send_message(message.chat.id, "Слышь бля, ты мне тут хуету не пиши",
-                                  reply_markup=self.plan_keyboard)
-
     # writing user to all types of db
     # also returning to main menu by /start
-    def write_user(self, message):
-        print(f'{message.from_user.first_name} {message.from_user.last_name} who have userid {self.user_id} choosed {self.choice} at level {message.text}')
-        self.db.write_data([self.user_id, self.choice, message.text], group=True)
-        str_plan = str(self.choice) + ' ' + str(message.text)
+    def write_user(self):
+        self.db.write_data([self.user_id, self.plan, self.type_plan], group=True)
+        str_plan = str(self.plan) + ' ' + str(self.type_plan)
         self.db.write_data([self.user_id, str_plan], user=True)
-        self.bot.send_message(message.chat.id, "Thank you for your choice.\n"
-                                               "Click /start or simply write it, to add subscrtiptions", reply_markup=self.return_keyboard)
 
     # simple and easy mailing
     def mailing(self, group, plan, message):
