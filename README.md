@@ -15,8 +15,7 @@ vim config
 python3 bot.py
 ```
 ### Mailing
-threadings needed because mainloop func is infinitive,  
-while you need to run mailing in time of mainloop
+all as simple as it is
 ```
 from bot import Bot
 a = Bot()
