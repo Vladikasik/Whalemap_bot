@@ -33,6 +33,7 @@ class Bot:
         # messages stuff
         self.choose_the_fst = None
         self.extended_choose = None
+        self.user_message = None
 
         print('init done')
 
@@ -41,6 +42,7 @@ class Bot:
         # starting chat
         @self.bot.message_handler(commands=['start'])
         def start_message(message):
+            self.user_message = message
             self.user_id = message.from_user.id
             self.choose_the_fst = self.bot.send_message(message.chat.id, msg.greeting, reply_markup=self.plan_keyboard)
 
@@ -68,6 +70,9 @@ class Bot:
     # writing user to all types of db
     # also returning to main menu by /start
     def write_user(self):
+        print(
+            f'{self.user_message.from_user.first_name} {self.user_message.from_user.last_name} who have userid {self.user_id} '
+            f'choosed {self.plan} at level {self.type_plan}')
         self.db.write_data([self.user_id, self.plan, self.type_plan], group=True)
         str_plan = str(self.plan) + ' ' + str(self.type_plan)
         self.db.write_data([self.user_id, str_plan], user=True)
