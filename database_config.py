@@ -50,6 +50,23 @@ class DB:
         to_return = users_data[user_id]
         return to_return
 
+    def get_user_btns(self, user_id, plan):
+        print('####################### get user buttons')
+        with open(self.users_file, "r") as file:
+            users_data = json.load(file)
+        try:
+            user = users_data[str(user_id)]
+            plans_selected = {'pro': False, 'rec': False}
+            for i in user:
+                if plan in i:
+                    if 'pro' in i:
+                        plans_selected['pro'] = True
+                    if 'rec' in i:
+                        plans_selected['rec'] = True
+        except KeyError:
+            plans_selected = {'pro': False, 'rec': False}
+        return plans_selected
+
     # getting user ids of specific plan
     def get_group(self, group, plan):
         with open(self.groups_file, "r") as file:

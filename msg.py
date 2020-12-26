@@ -12,8 +12,18 @@ choose_main_callback = ['whale',
                         'txes']
 
 # plan keyboard
-choose_plan = ['Recomended',
-               'Pro']
+choose_plan = ['rec',
+               'pro']
+
+def plan_choose_func(pro=False, recomended=False):
+    buttons = ['❌Recomended',
+               '❌Pro']
+    if pro:
+        buttons[1] = '✔Pro'
+    if recomended:
+        buttons[0] = '✔Recomended'
+
+    return buttons
 
 # ---- Describing all the planns
 whale = ["This is plan for whale inflows",
