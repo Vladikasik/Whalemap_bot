@@ -12,7 +12,7 @@ class Bot:
 
         # vars
         self.plan = {}
-        self.type_plan = None
+        self.type_plan = {}
         self.user_id = None
 
         # classes
@@ -32,7 +32,7 @@ class Bot:
         # messages stuff
         self.choose_the_fst = {}
         self.plan_msg = {}
-        self.user_message = None
+        self.user_message = {}
 
         print('init done')
 
@@ -41,7 +41,7 @@ class Bot:
         # starting chat
         @self.bot.message_handler(commands=['start', 'settings'])
         def start_message(message):
-            self.user_message = message
+            self.user_message[message.from_user.id] = message
             self.user_id = message.from_user.id
             self.choose_the_fst[message.from_user.id] = self.bot.send_message(message.chat.id, msg.greeting, reply_markup=self.plan_keyboard)
 
@@ -58,16 +58,29 @@ class Bot:
                                            reply_markup=self.extended_keyboard)
 
             elif call.data in msg.choose_plan:
-                self.type_plan = call.data
-                self.write_user(call.from_user.id)
                 data = self.db.get_user_btns(call.from_user.id, self.plan[call.from_user.id])
-                self.make_keybord(data['pro'], data['rec'])
-                self.bot.edit_message_text(chat_id=call.message.chat.id,
-                                           message_id=self.choose_the_fst[call.from_user.id].message_id,
-                                           text=f"Choose plan for {self.plan_msg[call.from_user.id]}",
-                                           reply_markup=self.extended_keyboard)
-                self.bot.answer_callback_query(callback_query_id=call.id, show_alert=True,
-                                               text=f"You have been sucsesfully subscribed to {self.plan} at level {self.type_plan}.")
+                self.type_plan[call.from_user.id] = call.data
+                if data[call.data]:
+                    self.delete_user(call.from_user.id)
+                    data = self.db.get_user_btns(call.from_user.id, self.plan[call.from_user.id])
+                    self.make_keybord(data['pro'], data['rec'])
+                    self.bot.edit_message_text(chat_id=call.message.chat.id,
+                                               message_id=self.choose_the_fst[call.from_user.id].message_id,
+                                               text=f"Choose plan for {self.plan_msg[call.from_user.id]}",
+                                               reply_markup=self.extended_keyboard)
+                    self.bot.answer_callback_query(callback_query_id=call.id, show_alert=True,
+                                                   text=f"You have been sucsesfully UNsubscribed to {self.plan[call.from_user.id]} at level {self.type_plan[call.from_user.id]}.")
+
+                else:
+                    self.write_user(call.from_user.id)
+                    data = self.db.get_user_btns(call.from_user.id, self.plan[call.from_user.id])
+                    self.make_keybord(data['pro'], data['rec'])
+                    self.bot.edit_message_text(chat_id=call.message.chat.id,
+                                               message_id=self.choose_the_fst[call.from_user.id].message_id,
+                                               text=f"Choose plan for {self.plan_msg[call.from_user.id]}",
+                                               reply_markup=self.extended_keyboard)
+                    self.bot.answer_callback_query(callback_query_id=call.id, show_alert=True,
+                                                   text=f"You have been sucsesfully subscribed to {self.plan[call.from_user.id]} at level {self.type_plan[call.from_user.id]}.")
 
 
             elif call.data == 'start':
@@ -89,19 +102,31 @@ class Bot:
     # also returning to main menu by /start
     def write_user(self, user_id):
         print(
-            f'{self.user_message.from_user.first_name} {self.user_message.from_user.last_name} who have userid {user_id} '
-            f'choosed {self.plan} at level {self.type_plan}')
-        self.db.write_data([user_id, self.plan[user_id], self.type_plan], group=True)
-        str_plan = str(self.plan) + ' ' + str(self.type_plan)
+            f'{self.user_message[user_id].from_user.first_name} {self.user_message[user_id].from_user.last_name} who have userid {user_id} '
+            f'choosed {self.plan[user_id]} at level {self.type_plan[user_id]}')
+        self.db.write_data([user_id, self.plan[user_id], self.type_plan[user_id]], group=True)
+        str_plan = self.plan[user_id] + ' ' + str(self.type_plan[user_id])
         self.db.write_data([user_id, str_plan], user=True)
 
+    def delete_user(self, user_id):
+        print(f'{self.user_message[user_id].from_user.first_name} {self.user_message[user_id].from_user.last_name} who have userid {user_id} '
+              f'canceled subscription to choosed {self.plan[user_id]} at level {self.type_plan[user_id]}')
+        data_to_delete = [user_id, self.plan[user_id], self.type_plan[user_id]]
+        self.db.delete_data(data_to_delete)
+
     # simple and easy mailing
-    def mailing(self, group, plan, message):
+    def mailing_text(self, group, plan, message):
         users_list = self.db.get_group(group=group, plan=plan)
         for i in users_list:
             print(f"Sending to {i} message = '{message}'")
             self.bot.send_message(i, message)
 
+    def mailing_image(self, group, plan, path_to_image):
+        with open(path_to_image, 'rb') as photo:
+            users_list = self.db.get_group(group=group, plan=plan)
+            for i in users_list:
+                print(f"Sending to {i} image")
+                self.bot.send_photo(i, photo)
 
 if __name__ == '__main__':
     bot = Bot()

@@ -43,6 +43,30 @@ class DB:
                 json.dump(users_data, file)
             print('users updated')
 
+    def delete_data(self, data):
+
+        user, choose, plan = data
+
+        with open(self.groups_file, "r") as file:
+            users_data = json.load(file)
+
+        index = users_data[choose][plan].index(user)
+        users_data[choose][plan].pop(index)
+
+        with open(self.groups_file, 'w') as file:
+            json.dump(users_data, file, indent=4)
+
+        with open(self.users_file, "r") as file:
+            users_data = json.load(file)
+
+        str_plan = choose + ' ' + plan
+        index = users_data[str(user)].index(str_plan)
+        users_data[str(user)].pop(index)
+
+        with open(self.users_file, 'w') as file:
+            json.dump(users_data, file)
+
+
     # getting all user subscriptions
     def get_user(self, user_id):
         with open(self.users_file, "r") as file:
@@ -51,7 +75,6 @@ class DB:
         return to_return
 
     def get_user_btns(self, user_id, plan):
-        print('####################### get user buttons')
         with open(self.users_file, "r") as file:
             users_data = json.load(file)
         try:
