@@ -26,6 +26,17 @@ a.mailing('sopr', 'Pro', 'simple message')
 # 2 - choose from ('Pro', 'Recomended')
 # 3 - your messsage
 ```
+sending image via mailing
+```
+from bot import Bot
+a = Bot()
+a.mailing('sopr', 'Pro', '/images/lol.png')
+#           |       |            |
+#           1       2            3
+# 1 - choose from ('whale', 'sopr', 'volumes', 'txes')
+# 2 - choose from ('Pro', 'Recomended')
+# 3 - path to image
+```
 ### Database(json) structure
 all this sh*t happens because only strings can be keys in  
 json and for groups it is easer for me, to make the values  
