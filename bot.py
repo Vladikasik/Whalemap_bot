@@ -4,10 +4,12 @@ from telebot import types
 try:
     import msg
     import config
+    from database_config import DB
 except:
     import Whalemap_bot.msg
     import Whalemap_bot.config
-from database_config import DB
+    from Whalemap_bot.database_config import DB
+
 
 
 class Bot:
