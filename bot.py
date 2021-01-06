@@ -25,7 +25,10 @@ class Bot:
         self.db = DB()
 
         # telebot
-        self.bot = telebot.TeleBot(config.token)
+        try:
+            self.bot = telebot.TeleBot(config.token)
+        except:
+            self.bot = telebot.TeleBot(Whalemap_bot.config.token)
 
         # keyboard stuff
         self.plan_keyboard = types.InlineKeyboardMarkup(row_width=1)
