@@ -26,9 +26,11 @@ class Bot:
 
         # telebot
         try:
+            import config as config
             self.bot = telebot.TeleBot(config.token)
         except:
-            self.bot = telebot.TeleBot(Whalemap_bot.config.token)
+            import Whalemap_bot.config as config
+            self.bot = telebot.TeleBot(config.token)
 
         # keyboard stuff
         self.plan_keyboard = types.InlineKeyboardMarkup(row_width=1)
