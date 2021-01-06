@@ -1,8 +1,8 @@
 import telebot
 import time
 from telebot import types
-import msg
-import config
+import Whalemap_bot.msg
+import Whalemap_bot.config
 from database_config import DB
 
 
