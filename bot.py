@@ -6,8 +6,8 @@ try:
     import config
     from database_config import DB
 except:
-    import Whalemap_bot.msg
-    import Whalemap_bot.config
+    import Whalemap_bot.msg as msg
+    import Whalemap_bot.config as msg 
     from Whalemap_bot.database_config import DB
 
 
