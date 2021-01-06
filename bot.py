@@ -7,7 +7,7 @@ try:
     from database_config import DB
 except:
     import Whalemap_bot.msg as msg
-    import Whalemap_bot.config as msg 
+    import Whalemap_bot.config as config
     from Whalemap_bot.database_config import DB
 
 
@@ -25,12 +25,7 @@ class Bot:
         self.db = DB()
 
         # telebot
-        try:
-            import config as config
-            self.bot = telebot.TeleBot(config.token)
-        except:
-            import Whalemap_bot.config as config
-            self.bot = telebot.TeleBot(config.token)
+        self.bot = telebot.TeleBot(config.token)
 
         # keyboard stuff
         self.plan_keyboard = types.InlineKeyboardMarkup(row_width=1)
