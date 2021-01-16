@@ -23,7 +23,7 @@ a.mailing('sopr', 'Pro', 'simple message')
 #           |       |            |
 #           1       2            3
 # 1 - choose from ('whale', 'sopr', 'volumes', 'txes')
-# 2 - choose from ('Pro', 'Recomended')
+# 2 - choose from ('pro', 'rec')
 # 3 - your messsage
 ```
 sending image via mailing
