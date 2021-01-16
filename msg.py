@@ -32,7 +32,7 @@ whale = ["This is plan for whale inflows",
 
 sopr = ["This is plan for sopr",
         '*Pro plan is for pro*',
-        'Recomended plan *recomendations*']
+        'Recomended plan sends a notification when SOPR (block resolution) falls below 1. This is usually a good time to buy.']
 
 volumes = ["This is plan for volume hodlers",
            '*Pro plan is for pro*',
