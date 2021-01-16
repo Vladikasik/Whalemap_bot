@@ -65,29 +65,31 @@ class Bot:
                 self.make_keybord(data['pro'], data['rec'])
                 self.plan_msg[call.from_user.id] = msg.choose_main_text[msg.choose_main_callback.index(call.data)]
                 try:
-                    if call.data == 'whale':
+                    print(str(call.data))
+                    if str(call.data) == 'whale':
                         message = ''
-                        for i in self.msg.whale:
+                        for i in msg.whale:
                             message += i + '\n'
-                    elif call.data == 'sopr':
+                    elif str(call.data) == 'sopr':
                         message = ''
-                        for i in self.msg.sopr:
+                        for i in msg.sopr:
                             message += i + '\n'
-                    elif call.data == 'volumes':
+                    elif str(call.data) == 'volumes':
                         message = ''
-                        for i in self.msg.volumes:
+                        for i in msg.volumes:
                             message += i + '\n'
-                    elif call.data == 'txes':
+                    elif str(call.data) == 'txes':
                         message = ''
-                        for i in self.msg.txes:
+                        for i in msg.txes:
                             message += i + '\n'
                     else:
+                        message = 'pososi'
                         print('error in callback data')
                     self.bot.edit_message_text(chat_id=call.message.chat.id, message_id=self.choose_the_fst[call.from_user.id].message_id,
                                            text=message,
                                            reply_markup=self.extended_keyboard)
-                except:
-                    print('prev mes tapped')
+                except Exception as ex:
+                    print('prev mes tapped', ex)
                     self.bot.answer_callback_query(callback_query_id=call.id, show_alert=True,
                                                    text=f"The bot have been restarted, this message isnt working. Please write /start to edit your subscriotions.")
 
