@@ -136,14 +136,20 @@ class Bot:
         users_list = self.db.get_group(group=group, plan=plan)
         for i in users_list:
             print(f"Sending to {i} message = '{message}'")
-            self.bot.send_message(i, message)
+            try:
+                self.bot.send_message(i, message)
+            except Exception as ex:
+                print(ex)
 
     def mailing_image(self, group, plan, path_to_image):
         users_list = self.db.get_group(group=group, plan=plan)
         for i in users_list:
             with open(path_to_image, 'rb') as photo:
                 print(f"Sending to {i} image")
-                self.bot.send_photo(i, photo)
+                try:
+                    self.bot.send_photo(i, photo)
+                except Exception as ex:
+                    print(ex)
 
     def mailing_text_all(self):
         users_list = self.db.get_all_users()
