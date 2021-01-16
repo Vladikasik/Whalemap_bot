@@ -1,9 +1,16 @@
 import telebot
 import time
 from telebot import types
-import msg
-import config
-from database_config import DB
+try:
+    import msg
+    import config
+    from database_config import DB
+except Exception as ex:
+    print('error in import', ex)
+    import Whalemap_bot.msg as msg
+    import Whalemap_bot.config as config
+    from Whalemap_bot.database_config import DB
+
 
 
 class Bot:
@@ -57,9 +64,15 @@ class Bot:
                 print(f'excended - {self.db.get_user_btns(call.from_user.id, call.data)}')
                 self.make_keybord(data['pro'], data['rec'])
                 self.plan_msg[call.from_user.id] = msg.choose_main_text[msg.choose_main_callback.index(call.data)]
-                self.bot.edit_message_text(chat_id=call.message.chat.id, message_id=self.choose_the_fst[call.from_user.id].message_id,
+                try:
+                    self.bot.edit_message_text(chat_id=call.message.chat.id, message_id=self.choose_the_fst[call.from_user.id].message_id,
                                            text=f"Choose plan for {msg.choose_main_text[msg.choose_main_callback.index(call.data)]}",
                                            reply_markup=self.extended_keyboard)
+                except:
+                    print('prev mes tapped')
+                    self.bot.answer_callback_query(callback_query_id=call.id, show_alert=True,
+                                                   text=f"The bot have been restarted, this message isnt working. Please write /start to edit your subscriotions.")
+
 
             elif call.data in msg.choose_plan:
                 data = self.db.get_user_btns(call.from_user.id, self.plan[call.from_user.id])

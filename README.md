@@ -8,7 +8,7 @@ blockchain.
 ### Running bot
 dont care its already running
 ```
-git clone -b dev https://github.com/Vladikasik/Whalemap_bot
+git clone https://github.com/Vladikasik/Whalemap_bot
 cd Whalemap_bot
 vim config
 <token = 'bot token'>
