@@ -19,18 +19,18 @@ all as simple as it is
 ```
 from bot import Bot
 a = Bot()
-a.mailing('sopr', 'Pro', 'simple message')
+a.mailing_text('sopr', 'pro', 'simple message')
 #           |       |            |
 #           1       2            3
 # 1 - choose from ('whale', 'sopr', 'volumes', 'txes')
-# 2 - choose from ('Pro', 'Recomended')
+# 2 - choose from ('pro', 'rec')
 # 3 - your messsage
 ```
 sending image via mailing
 ```
 from bot import Bot
 a = Bot()
-a.mailing('sopr', 'Pro', '/images/lol.png')
+a.mailing_image('sopr', 'pro', '/images/lol.png')
 #           |       |            |
 #           1       2            3
 # 1 - choose from ('whale', 'sopr', 'volumes', 'txes')
