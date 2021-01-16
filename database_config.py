@@ -96,3 +96,10 @@ class DB:
             groups_data = json.load(file)
         to_return = groups_data[group][plan]
         return to_return
+
+    def get_all_users(self):
+        users_list = []
+        with open(self.users_file, 'r') as file:
+            data = json.load(file)
+        users_list = list(data.keys())
+        return users_list
