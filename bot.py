@@ -65,8 +65,26 @@ class Bot:
                 self.make_keybord(data['pro'], data['rec'])
                 self.plan_msg[call.from_user.id] = msg.choose_main_text[msg.choose_main_callback.index(call.data)]
                 try:
+                    if call.data == 'whale':
+                        message = ''
+                        for i in self.msg.whale:
+                            message += i + '\n'
+                    elif call.data == 'sopr':
+                        message = ''
+                        for i in self.msg.sopr:
+                            message += i + '\n'
+                    elif call.data == 'volumes':
+                        message = ''
+                        for i in self.msg.volumes:
+                            message += i + '\n'
+                    elif call.data == 'txes':
+                        message = ''
+                        for i in self.msg.txes:
+                            message += i + '\n'
+                    else:
+                        print('error in callback data')
                     self.bot.edit_message_text(chat_id=call.message.chat.id, message_id=self.choose_the_fst[call.from_user.id].message_id,
-                                           text=f"Choose plan for {msg.choose_main_text[msg.choose_main_callback.index(call.data)]}",
+                                           text=message,
                                            reply_markup=self.extended_keyboard)
                 except:
                     print('prev mes tapped')
