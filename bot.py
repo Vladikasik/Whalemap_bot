@@ -155,7 +155,10 @@ class Bot:
         users_list = self.db.get_all_users()
         message = 'The bot was restarted\nwrite /start to restart the bot.'
         for user in users_list:
-            self.bot.send_message(user, message)
+            try:
+                self.bot.send_message(user, message)
+            except Exception as ex:
+                print(ex)
 
 if __name__ == '__main__':
     bot = Bot()
