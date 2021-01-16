@@ -67,26 +67,26 @@ class Bot:
                 try:
                     print(str(call.data))
                     if str(call.data) == 'whale':
-                        message = ''
+                        self.plan_msg[call.from_user.id] = ''
                         for i in msg.whale:
-                            message += i + '\n'
+                            self.plan_msg[call.from_user.id] += i + '\n'
                     elif str(call.data) == 'sopr':
-                        message = ''
+                        self.plan_msg[call.from_user.id] = ''
                         for i in msg.sopr:
-                            message += i + '\n'
+                            self.plan_msg[call.from_user.id] += i + '\n'
                     elif str(call.data) == 'volumes':
-                        message = ''
+                        self.plan_msg[call.from_user.id] = ''
                         for i in msg.volumes:
-                            message += i + '\n'
+                            self.plan_msg[call.from_user.id] += i + '\n'
                     elif str(call.data) == 'txes':
-                        message = ''
+                        self.plan_msg[call.from_user.id] = ''
                         for i in msg.txes:
-                            message += i + '\n'
+                            self.plan_msg[call.from_user.id] += i + '\n'
                     else:
-                        message = 'pososi'
+                        self.plan_msg[call.from_user.id] = 'pososi'
                         print('error in callback data')
                     self.bot.edit_message_text(chat_id=call.message.chat.id, message_id=self.choose_the_fst[call.from_user.id].message_id,
-                                           text=message,
+                                           text=self.plan_msg[call.from_user.id],
                                            reply_markup=self.extended_keyboard)
                 except Exception as ex:
                     print('prev mes tapped', ex)
@@ -103,7 +103,7 @@ class Bot:
                     self.make_keybord(data['pro'], data['rec'])
                     self.bot.edit_message_text(chat_id=call.message.chat.id,
                                                message_id=self.choose_the_fst[call.from_user.id].message_id,
-                                               text=f"Choose plan for {self.plan_msg[call.from_user.id]}",
+                                               text=self.plan_msg[call.from_user.id],
                                                reply_markup=self.extended_keyboard)
                     self.bot.answer_callback_query(callback_query_id=call.id, show_alert=True,
                                                    text=f"You have been sucsesfully UNsubscribed to {self.plan[call.from_user.id]} at level {self.type_plan[call.from_user.id]}.")
@@ -112,12 +112,13 @@ class Bot:
                     self.write_user(call.from_user.id)
                     data = self.db.get_user_btns(call.from_user.id, self.plan[call.from_user.id])
                     self.make_keybord(data['pro'], data['rec'])
-                    self.bot.edit_message_text(chat_id=call.message.chat.id,
-                                               message_id=self.choose_the_fst[call.from_user.id].message_id,
-                                               text=f"Choose plan for {self.plan_msg[call.from_user.id]}",
-                                               reply_markup=self.extended_keyboard)
-                    self.bot.answer_callback_query(callback_query_id=call.id, show_alert=True,
-                                                   text=f"You have been sucsesfully subscribed to {self.plan[call.from_user.id]} at level {self.type_plan[call.from_user.id]}.")
+                    if data[call.data]:
+                        self.bot.edit_message_text(chat_id=call.message.chat.id,
+                                                   message_id=self.choose_the_fst[call.from_user.id].message_id,
+                                                   text=self.plan_msg[call.from_user.id],
+                                                   reply_markup=self.extended_keyboard)
+                        self.bot.answer_callback_query(callback_query_id=call.id, show_alert=True,
+                                                       text=f"You have been sucsesfully subscribed to {self.plan[call.from_user.id]} at level {self.type_plan[call.from_user.id]}.")
 
 
             elif call.data == 'start':
