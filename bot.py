@@ -43,11 +43,11 @@ class Bot:
 
         print('init done')
 
+    def mainloop(self):
+        
         self.mailing_text_all()
 
         print('restart mailing done')
-
-    def mainloop(self):
 
         # starting chat
         @self.bot.message_handler(commands=['start', 'settings'])
