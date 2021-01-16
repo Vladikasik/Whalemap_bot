@@ -19,7 +19,7 @@ all as simple as it is
 ```
 from bot import Bot
 a = Bot()
-a.mailing('sopr', 'Pro', 'simple message')
+a.mailing('sopr', 'pro', 'simple message')
 #           |       |            |
 #           1       2            3
 # 1 - choose from ('whale', 'sopr', 'volumes', 'txes')
@@ -30,7 +30,7 @@ sending image via mailing
 ```
 from bot import Bot
 a = Bot()
-a.mailing('sopr', 'Pro', '/images/lol.png')
+a.mailing('sopr', 'pro', '/images/lol.png')
 #           |       |            |
 #           1       2            3
 # 1 - choose from ('whale', 'sopr', 'volumes', 'txes')
