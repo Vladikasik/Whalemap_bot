@@ -139,9 +139,9 @@ class Bot:
             self.bot.send_message(i, message)
 
     def mailing_image(self, group, plan, path_to_image):
-        with open(path_to_image, 'rb') as photo:
-            users_list = self.db.get_group(group=group, plan=plan)
-            for i in users_list:
+        users_list = self.db.get_group(group=group, plan=plan)
+        for i in users_list:
+            with open(path_to_image, 'rb') as photo:
                 print(f"Sending to {i} image")
                 self.bot.send_photo(i, photo)
 
