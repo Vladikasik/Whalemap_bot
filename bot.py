@@ -177,8 +177,7 @@ class Bot:
 
     def mailing_text_all(self):
         users_list = self.db.get_all_users()
-        message = 'The bot was restarted\n'
-        'write /start to restart the bot.'
+        message = 'The bot was restarted\nwrite /start to restart the bot.'
         for user in users_list:
             try:
                 self.bot.send_message(user, message)
