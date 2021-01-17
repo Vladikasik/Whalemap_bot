@@ -64,6 +64,9 @@ class Bot:
                                                text=f"Choose plan for {msg.choose_main_text[msg.choose_main_callback.index(call.data)]}",
                                                reply_markup=self.extended_keyboard)
                 except Exception as ex:
+                    self.bot.answer_callback_query(callback_query_id=call.id, show_alert=True,
+                                                       text="This is old buttons. We've restarted the bot. Please write /start to make bot nice")
+                except Exception as ex:
                     print('Error in buttons probably\nLines 57-68')
                     print(ex)
 
