@@ -5,8 +5,7 @@ try:
     import msg
     import config
     from database_config import DB
-except Exception as ex:
-    print('error in import', ex)
+except:
     import Whalemap_bot.msg as msg
     import Whalemap_bot.config as config
     from Whalemap_bot.database_config import DB
@@ -44,10 +43,6 @@ class Bot:
         print('init done')
 
     def mainloop(self):
-        
-        self.mailing_text_all()
-
-        print('restart mailing done')
 
         # starting chat
         @self.bot.message_handler(commands=['start', 'settings'])
@@ -64,35 +59,9 @@ class Bot:
                 print(f'excended - {self.db.get_user_btns(call.from_user.id, call.data)}')
                 self.make_keybord(data['pro'], data['rec'])
                 self.plan_msg[call.from_user.id] = msg.choose_main_text[msg.choose_main_callback.index(call.data)]
-                try:
-                    print(str(call.data))
-                    if str(call.data) == 'whale':
-                        self.plan_msg[call.from_user.id] = ''
-                        for i in msg.whale:
-                            self.plan_msg[call.from_user.id] += i + '\n'
-                    elif str(call.data) == 'sopr':
-                        self.plan_msg[call.from_user.id] = ''
-                        for i in msg.sopr:
-                            self.plan_msg[call.from_user.id] += i + '\n'
-                    elif str(call.data) == 'volumes':
-                        self.plan_msg[call.from_user.id] = ''
-                        for i in msg.volumes:
-                            self.plan_msg[call.from_user.id] += i + '\n'
-                    elif str(call.data) == 'txes':
-                        self.plan_msg[call.from_user.id] = ''
-                        for i in msg.txes:
-                            self.plan_msg[call.from_user.id] += i + '\n'
-                    else:
-                        self.plan_msg[call.from_user.id] = 'pososi'
-                        print('error in callback data')
-                    self.bot.edit_message_text(chat_id=call.message.chat.id, message_id=self.choose_the_fst[call.from_user.id].message_id,
-                                           text=self.plan_msg[call.from_user.id],
+                self.bot.edit_message_text(chat_id=call.message.chat.id, message_id=self.choose_the_fst[call.from_user.id].message_id,
+                                           text=f"Choose plan for {msg.choose_main_text[msg.choose_main_callback.index(call.data)]}",
                                            reply_markup=self.extended_keyboard)
-                except Exception as ex:
-                    print('prev mes tapped', ex)
-                    self.bot.answer_callback_query(callback_query_id=call.id, show_alert=True,
-                                                   text=f"The bot have been restarted, this message isnt working. Please write /start to edit your subscriotions.")
-
 
             elif call.data in msg.choose_plan:
                 data = self.db.get_user_btns(call.from_user.id, self.plan[call.from_user.id])
@@ -103,22 +72,21 @@ class Bot:
                     self.make_keybord(data['pro'], data['rec'])
                     self.bot.edit_message_text(chat_id=call.message.chat.id,
                                                message_id=self.choose_the_fst[call.from_user.id].message_id,
-                                               text=self.plan_msg[call.from_user.id],
+                                               text=f"Choose plan for {self.plan_msg[call.from_user.id]}",
                                                reply_markup=self.extended_keyboard)
                     self.bot.answer_callback_query(callback_query_id=call.id, show_alert=True,
-                                                   text=f"You have been sucsesfully UNsubscribed to {self.plan[call.from_user.id]} at level {self.type_plan[call.from_user.id]}.")
+                                                   text=f"You have been sucsesfully unsubscribed to {self.plan[call.from_user.id]} at level {self.type_plan[call.from_user.id]}.")
 
                 else:
                     self.write_user(call.from_user.id)
                     data = self.db.get_user_btns(call.from_user.id, self.plan[call.from_user.id])
                     self.make_keybord(data['pro'], data['rec'])
-                    if data[call.data]:
-                        self.bot.edit_message_text(chat_id=call.message.chat.id,
-                                                   message_id=self.choose_the_fst[call.from_user.id].message_id,
-                                                   text=self.plan_msg[call.from_user.id],
-                                                   reply_markup=self.extended_keyboard)
-                        self.bot.answer_callback_query(callback_query_id=call.id, show_alert=True,
-                                                       text=f"You have been sucsesfully subscribed to {self.plan[call.from_user.id]} at level {self.type_plan[call.from_user.id]}.")
+                    self.bot.edit_message_text(chat_id=call.message.chat.id,
+                                               message_id=self.choose_the_fst[call.from_user.id].message_id,
+                                               text=f"Choose plan for {self.plan_msg[call.from_user.id]}",
+                                               reply_markup=self.extended_keyboard)
+                    self.bot.answer_callback_query(callback_query_id=call.id, show_alert=True,
+                                                   text=f"You have been sucsesfully subscribed to {self.plan[call.from_user.id]} at level {self.type_plan[call.from_user.id]}.")
 
 
             elif call.data == 'start':
@@ -156,30 +124,15 @@ class Bot:
     def mailing_text(self, group, plan, message):
         users_list = self.db.get_group(group=group, plan=plan)
         for i in users_list:
-            print(f"Sending to {i} message = '{message}'")
-            try:
-                self.bot.send_message(i, message)
-            except Exception as ex:
-                print(ex)
+            # print(f"Sending to {i} message = '{message}'")
+            self.bot.send_message(i, message)
 
     def mailing_image(self, group, plan, path_to_image):
-        users_list = self.db.get_group(group=group, plan=plan)
-        for i in users_list:
-            with open(path_to_image, 'rb') as photo:
-                print(f"Sending to {i} image")
-                try:
-                    self.bot.send_photo(i, photo)
-                except Exception as ex:
-                    print(ex)
-
-    def mailing_text_all(self):
-        users_list = self.db.get_all_users()
-        message = 'The bot was restarted\nwrite /start to restart the bot.'
-        for user in users_list:
-            try:
-                self.bot.send_message(user, message)
-            except Exception as ex:
-                print(ex)
+        with open(path_to_image, 'rb') as photo:
+            users_list = self.db.get_group(group=group, plan=plan)
+            for i in users_list:
+                # print(f"Sending to {i} image")
+                self.bot.send_photo(i, photo)
 
 if __name__ == '__main__':
     bot = Bot()
