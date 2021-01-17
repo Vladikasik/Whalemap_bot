@@ -54,45 +54,60 @@ class Bot:
         @self.bot.callback_query_handler(func=lambda call: True)
         def buttons(call):
             if call.data in msg.choose_main_callback:
-                self.plan[call.from_user.id] = call.data
-                data = self.db.get_user_btns(call.from_user.id, call.data)
-                print(f'excended - {self.db.get_user_btns(call.from_user.id, call.data)}')
-                self.make_keybord(data['pro'], data['rec'])
-                self.plan_msg[call.from_user.id] = msg.choose_main_text[msg.choose_main_callback.index(call.data)]
-                self.bot.edit_message_text(chat_id=call.message.chat.id, message_id=self.choose_the_fst[call.from_user.id].message_id,
-                                           text=f"Choose plan for {msg.choose_main_text[msg.choose_main_callback.index(call.data)]}",
-                                           reply_markup=self.extended_keyboard)
+                try:
+                    self.plan[call.from_user.id] = call.data
+                    data = self.db.get_user_btns(call.from_user.id, call.data)
+                    print(f'excended - {self.db.get_user_btns(call.from_user.id, call.data)}')
+                    self.make_keybord(data['pro'], data['rec'])
+                    self.plan_msg[call.from_user.id] = msg.choose_main_text[msg.choose_main_callback.index(call.data)]
+                    self.bot.edit_message_text(chat_id=call.message.chat.id, message_id=self.choose_the_fst[call.from_user.id].message_id,
+                                               text=f"Choose plan for {msg.choose_main_text[msg.choose_main_callback.index(call.data)]}",
+                                               reply_markup=self.extended_keyboard)
+                except Exception as ex:
+                    print('Error in buttons probably\nLines 57-68')
+                    print(ex)
 
             elif call.data in msg.choose_plan:
-                data = self.db.get_user_btns(call.from_user.id, self.plan[call.from_user.id])
-                self.type_plan[call.from_user.id] = call.data
-                if data[call.data]:
-                    self.delete_user(call.from_user.id)
+                try:
                     data = self.db.get_user_btns(call.from_user.id, self.plan[call.from_user.id])
-                    self.make_keybord(data['pro'], data['rec'])
-                    self.bot.edit_message_text(chat_id=call.message.chat.id,
-                                               message_id=self.choose_the_fst[call.from_user.id].message_id,
-                                               text=f"Choose plan for {self.plan_msg[call.from_user.id]}",
-                                               reply_markup=self.extended_keyboard)
-                    self.bot.answer_callback_query(callback_query_id=call.id, show_alert=True,
-                                                   text=f"You have been sucsesfully unsubscribed to {self.plan[call.from_user.id]} at level {self.type_plan[call.from_user.id]}.")
+                    self.type_plan[call.from_user.id] = call.data
+                    if data[call.data]:
+                        self.delete_user(call.from_user.id)
+                        data = self.db.get_user_btns(call.from_user.id, self.plan[call.from_user.id])
+                        self.make_keybord(data['pro'], data['rec'])
+                        self.bot.edit_message_text(chat_id=call.message.chat.id,
+                                                   message_id=self.choose_the_fst[call.from_user.id].message_id,
+                                                   text=f"Choose plan for {self.plan_msg[call.from_user.id]}",
+                                                   reply_markup=self.extended_keyboard)
+                        self.bot.answer_callback_query(callback_query_id=call.id, show_alert=True,
+                                                       text=f"You have been sucsesfully unsubscribed to {self.plan[call.from_user.id]} at level {self.type_plan[call.from_user.id]}.")
+                except Exception as ex:
+                    print('Error in unsibscribing pro/rec\nLines 72-86')
+                    print(ex)
+
 
                 else:
-                    self.write_user(call.from_user.id)
-                    data = self.db.get_user_btns(call.from_user.id, self.plan[call.from_user.id])
-                    self.make_keybord(data['pro'], data['rec'])
-                    self.bot.edit_message_text(chat_id=call.message.chat.id,
-                                               message_id=self.choose_the_fst[call.from_user.id].message_id,
-                                               text=f"Choose plan for {self.plan_msg[call.from_user.id]}",
-                                               reply_markup=self.extended_keyboard)
-                    self.bot.answer_callback_query(callback_query_id=call.id, show_alert=True,
-                                                   text=f"You have been sucsesfully subscribed to {self.plan[call.from_user.id]} at level {self.type_plan[call.from_user.id]}.")
-
+                    try:
+                        self.write_user(call.from_user.id)
+                        data = self.db.get_user_btns(call.from_user.id, self.plan[call.from_user.id])
+                        self.make_keybord(data['pro'], data['rec'])
+                        self.bot.edit_message_text(chat_id=call.message.chat.id,
+                                                   message_id=self.choose_the_fst[call.from_user.id].message_id,
+                                                   text=f"Choose plan for {self.plan_msg[call.from_user.id]}",
+                                                   reply_markup=self.extended_keyboard)
+                        self.bot.answer_callback_query(callback_query_id=call.id, show_alert=True,
+                                                       text=f"You have been sucsesfully subscribed to {self.plan[call.from_user.id]} at level {self.type_plan[call.from_user.id]}.")
+                    except Exception as ex:
+                        print('Error in subscribing\nLines 91-99')
+                        print(ex)
 
             elif call.data == 'start':
-                self.bot.edit_message_text(chat_id=call.message.chat.id, message_id=self.choose_the_fst[call.from_user.id].message_id,
+                try:
+                    self.bot.edit_message_text(chat_id=call.message.chat.id, message_id=self.choose_the_fst[call.from_user.id].message_id,
                                            text=msg.greeting,
                                            reply_markup=self.plan_keyboard)
+                except Exception as ex:
+                    print('Error in going back to menu\nLines 106')
 
         self.bot.polling()
 
