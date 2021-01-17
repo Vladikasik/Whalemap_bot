@@ -44,6 +44,10 @@ class Bot:
 
     def mainloop(self):
 
+        self.mailing_text_all()
+
+        print('restart mailing done')
+
         # starting chat
         @self.bot.message_handler(commands=['start', 'settings'])
         def start_message(message):
@@ -53,8 +57,13 @@ class Bot:
 
         @self.bot.callback_query_handler(func=lambda call: True)
         def buttons(call):
+            try:
+                print(call.from_user.first_name, call.from_user.last_name, call.from_user.id, '@', call.from_user.username, 'call.data =', call.data)
+            except:
+                print(call.from_user.first_name, call.from_user.last_name, call.from_user.id, 'call.data =', call.data)
             if call.data in msg.choose_main_callback:
                 try:
+                    print(self.choose_the_fst)
                     self.plan[call.from_user.id] = call.data
                     data = self.db.get_user_btns(call.from_user.id, call.data)
                     print(f'excended - {self.db.get_user_btns(call.from_user.id, call.data)}')
@@ -66,9 +75,9 @@ class Bot:
                 except Exception as ex:
                     self.bot.answer_callback_query(callback_query_id=call.id, show_alert=True,
                                                        text="This is old buttons. We've restarted the bot. Please write /start to make bot nice")
-                except Exception as ex:
-                    print('Error in buttons probably\nLines 57-68')
+                    print('Error in buttons probably\nLines 66-74')
                     print(ex)
+                    
 
             elif call.data in msg.choose_plan:
                 try:
@@ -85,7 +94,9 @@ class Bot:
                         self.bot.answer_callback_query(callback_query_id=call.id, show_alert=True,
                                                        text=f"You have been sucsesfully unsubscribed to {self.plan[call.from_user.id]} at level {self.type_plan[call.from_user.id]}.")
                 except Exception as ex:
-                    print('Error in unsibscribing pro/rec\nLines 72-86')
+                    self.bot.answer_callback_query(callback_query_id=call.id, show_alert=True,
+                                                       text="This is old buttons. We've restarted the bot. Please write /start to make bot nice")
+                    print('Error in unsibscribing pro/rec\nLines 84-93')
                     print(ex)
 
 
@@ -101,7 +112,9 @@ class Bot:
                         self.bot.answer_callback_query(callback_query_id=call.id, show_alert=True,
                                                        text=f"You have been sucsesfully subscribed to {self.plan[call.from_user.id]} at level {self.type_plan[call.from_user.id]}.")
                     except Exception as ex:
-                        print('Error in subscribing\nLines 91-99')
+                        self.bot.answer_callback_query(callback_query_id=call.id, show_alert=True,
+                                                       text="This is old buttons. We've restarted the bot. Please write /start to make bot nice")
+                        print('Error in subscribing\nLines 105-112')
                         print(ex)
 
             elif call.data == 'start':
@@ -110,7 +123,9 @@ class Bot:
                                            text=msg.greeting,
                                            reply_markup=self.plan_keyboard)
                 except Exception as ex:
-                    print('Error in going back to menu\nLines 106')
+                    self.bot.answer_callback_query(callback_query_id=call.id, show_alert=True,
+                                                       text="This is old buttons. We've restarted the bot. Please write /start to make bot nice")
+                    print('Error in going back to menu\nLines 122')
 
         self.bot.polling()
 
@@ -143,14 +158,34 @@ class Bot:
         users_list = self.db.get_group(group=group, plan=plan)
         for i in users_list:
             # print(f"Sending to {i} message = '{message}'")
-            self.bot.send_message(i, message)
+            try:
+                self.bot.send_message(i, message)
+            except Exception as ex:
+                print('error in mailing text, skippink this user ...')
+                print(ex)
 
     def mailing_image(self, group, plan, path_to_image):
         with open(path_to_image, 'rb') as photo:
             users_list = self.db.get_group(group=group, plan=plan)
             for i in users_list:
                 # print(f"Sending to {i} image")
-                self.bot.send_photo(i, photo)
+                try:
+                    self.bot.send_photo(i, photo)
+                except Exception as ex:
+                    print('error in mailing image, skippink this user...')
+                    print(ex)
+
+    def mailing_text_all(self):
+        users_list = self.db.get_all_users()
+        message = 'The bot was restarted\n'
+        'write /start to restart the bot.'
+        for user in users_list:
+            try:
+                self.bot.send_message(user, message)
+            except Exception as ex:
+                print('cannot send starter mailing, skiping this user ....')
+                print(ex)
+
 
 if __name__ == '__main__':
     bot = Bot()
