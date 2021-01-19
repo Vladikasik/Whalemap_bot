@@ -57,10 +57,12 @@ class Bot:
 
         @self.bot.callback_query_handler(func=lambda call: True)
         def buttons(call):
+            print(call)
             try:
                 print(call.from_user.first_name, call.from_user.last_name, call.from_user.id, '@', call.from_user.username, 'call.data =', call.data)
             except:
                 print(call.from_user.first_name, call.from_user.last_name, call.from_user.id, 'call.data =', call.data)
+            print('test test')
             if call.data in msg.choose_main_callback:
                 try:
                     print(self.choose_the_fst)
