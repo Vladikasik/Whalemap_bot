@@ -45,6 +45,8 @@ class Bot:
 
     def mainloop(self):
 
+        self.mailing_text_all()
+
         # starting chat
         @self.bot.message_handler(commands=['start', 'settings'])
         def start_message(message):
@@ -61,45 +63,60 @@ class Bot:
                 self.make_keybord(data['pro'], data['rec'])
                 self.plan_msg[call.from_user.id] = msg.choose_main_text[msg.choose_main_callback.index(call.data)]
                 try:
+                    zatychka = self.plan_msg[call.from_user.id]
                     self.bot.edit_message_text(chat_id=call.message.chat.id, message_id=self.choose_the_fst[call.from_user.id].message_id,
                                            text=f"Choose plan for {msg.choose_main_text[msg.choose_main_callback.index(call.data)]}",
                                            reply_markup=self.extended_keyboard)
-                except:
-                    print('prev mes tapped')
+                except Exception as ex:
+                    print(ex)
+                    print('prev mes tapped 1st level')
                     self.bot.answer_callback_query(callback_query_id=call.id, show_alert=True,
                                                    text=f"The bot have been restarted, this message isnt working. Please write /start to edit your subscriotions.")
 
 
             elif call.data in msg.choose_plan:
-                data = self.db.get_user_btns(call.from_user.id, self.plan[call.from_user.id])
-                self.type_plan[call.from_user.id] = call.data
-                if data[call.data]:
-                    self.delete_user(call.from_user.id)
+                try:
                     data = self.db.get_user_btns(call.from_user.id, self.plan[call.from_user.id])
-                    self.make_keybord(data['pro'], data['rec'])
-                    self.bot.edit_message_text(chat_id=call.message.chat.id,
+                    self.type_plan[call.from_user.id] = call.data
+                    if data[call.data]:
+                        self.delete_user(call.from_user.id)
+                        data = self.db.get_user_btns(call.from_user.id, self.plan[call.from_user.id])
+                        self.make_keybord(data['pro'], data['rec'])
+                        
+                        self.bot.edit_message_text(chat_id=call.message.chat.id,
                                                message_id=self.choose_the_fst[call.from_user.id].message_id,
                                                text=f"Choose plan for {self.plan_msg[call.from_user.id]}",
                                                reply_markup=self.extended_keyboard)
-                    self.bot.answer_callback_query(callback_query_id=call.id, show_alert=True,
+                        self.bot.answer_callback_query(callback_query_id=call.id, show_alert=True,
                                                    text=f"You have been sucsesfully UNsubscribed to {self.plan[call.from_user.id]} at level {self.type_plan[call.from_user.id]}.")
-
-                else:
-                    self.write_user(call.from_user.id)
-                    data = self.db.get_user_btns(call.from_user.id, self.plan[call.from_user.id])
-                    self.make_keybord(data['pro'], data['rec'])
-                    self.bot.edit_message_text(chat_id=call.message.chat.id,
-                                               message_id=self.choose_the_fst[call.from_user.id].message_id,
-                                               text=f"Choose plan for {self.plan_msg[call.from_user.id]}",
-                                               reply_markup=self.extended_keyboard)
+                    else:
+                        self.write_user(call.from_user.id)
+                        data = self.db.get_user_btns(call.from_user.id, self.plan[call.from_user.id])
+                        self.make_keybord(data['pro'], data['rec'])
+                        self.bot.edit_message_text(chat_id=call.message.chat.id,
+                                                   message_id=self.choose_the_fst[call.from_user.id].message_id,
+                                                   text=f"Choose plan for {self.plan_msg[call.from_user.id]}",
+                                                   reply_markup=self.extended_keyboard)
+                        self.bot.answer_callback_query(callback_query_id=call.id, show_alert=True,
+                                                       text=f"You have been sucsesfully subscribed to {self.plan[call.from_user.id]} at level {self.type_plan[call.from_user.id]}.")
+                except:
+                    print('prev mes tapped 2nd level')
                     self.bot.answer_callback_query(callback_query_id=call.id, show_alert=True,
-                                                   text=f"You have been sucsesfully subscribed to {self.plan[call.from_user.id]} at level {self.type_plan[call.from_user.id]}.")
+                                               text=f"The bot have been restarted, this message isnt working. Please write /start to edit your subscriotions.")
+
+                
+                    
 
 
             elif call.data == 'start':
-                self.bot.edit_message_text(chat_id=call.message.chat.id, message_id=self.choose_the_fst[call.from_user.id].message_id,
+                try:
+                    self.bot.edit_message_text(chat_id=call.message.chat.id, message_id=self.choose_the_fst[call.from_user.id].message_id,
                                            text=msg.greeting,
                                            reply_markup=self.plan_keyboard)
+                except:
+                        print('prev mes tapped 4th level')
+                        self.bot.answer_callback_query(callback_query_id=call.id, show_alert=True,
+                                                   text=f"The bot have been restarted, this message isnt working. Please write /start to edit your subscriotions.")
 
         self.bot.polling()
 
@@ -140,6 +157,12 @@ class Bot:
             for i in users_list:
                 print(f"Sending to {i} image")
                 self.bot.send_photo(i, photo)
+
+    def mailing_text_all(self):
+        users_list = self.db.get_all_users()
+        message = 'The bot was restarted\nwrite /start to restart the bot.'
+        for user in users_list:
+            self.bot.send_message(user, message)
 
 if __name__ == '__main__':
     bot = Bot()
